@@ -1,48 +1,20 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_wallet_app/colors/colors.dart';
+import 'package:my_wallet_app/controllers/db_helper.dart';
+import 'package:my_wallet_app/providers/edit_screen_provider.dart';
 import 'package:my_wallet_app/screens/edit_transaction_screen/widgets.dart';
-import '../../colors/colors.dart';
-import '../../controllers/db_helper.dart';
-import '../home screens/home_screen.dart';
+import 'package:my_wallet_app/screens/home%20screens/home_screen.dart';
+import 'package:provider/provider.dart';
 
-class EditTransaction extends StatefulWidget {
-  const EditTransaction(
-      {super.key,
-      required this.amount,
-      required this.note,
-      required this.date,
-      required this.type,
-      required this.index});
-
-  final int amount;
-  final String note;
-  final DateTime date;
-  final String type;
+class EditTransaction extends StatelessWidget {
+  EditTransaction(
+      {super.key, required this.index, this.note, this.fieldamount});
   final int index;
+  int? fieldamount;
+  String? note;
 
-  @override
-  State<EditTransaction> createState() => _EditTransactionState();
-}
-
-class _EditTransactionState extends State<EditTransaction> {
-  TextEditingController editAmountController = TextEditingController();
-  TextEditingController editNoteController = TextEditingController();
-  @override
-  void initState() {
-    amount = widget.amount;
-    note = widget.note;
-    type = widget.type;
-    selectedDate = widget.date;
-    editAmountController.text = amount.toString();
-    editNoteController.text = note;
-    super.initState();
-  }
-
-  int? amount;
-  String note = '';
-  String type = 'income';
-  DateTime selectedDate = DateTime.now();
   List<String> months = [
     "JAN",
     "FEB",
@@ -57,22 +29,36 @@ class _EditTransactionState extends State<EditTransaction> {
     "NOV",
     "DEC"
   ];
+  TextEditingController editAmountController = TextEditingController();
+
+  TextEditingController editNoteController = TextEditingController();
 
   Future<void> selectDate(BuildContext context) async {
+    DateTime selectedDate =
+        Provider.of<EditTransactionProvider>(context, listen: false)
+            .selectedDate;
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: selectedDate,
+        initialDate: DateTime.now(),
         firstDate: DateTime(2020, 12),
         lastDate: DateTime(2200, 12));
     if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
+      // ignore: use_build_context_synchronously
+      Provider.of<EditTransactionProvider>(context, listen: false)
+          .selectedDate = picked;
     }
   }
 
+  int? amount;
+
   @override
   Widget build(BuildContext context) {
+    editAmountController.text = fieldamount.toString();
+    editNoteController.text = note!;
+    final provider = Provider.of<EditTransactionProvider>(context);
+    String type = provider.transactionType;
+    DateTime selectedDate = provider.selectedDate;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -88,7 +74,32 @@ class _EditTransactionState extends State<EditTransaction> {
         padding: const EdgeInsets.all(16.0),
         children: [
           const SizedBox(
-            height: 50.0,
+            height: 13.0,
+          ),
+          Row(
+            children: [
+              sympolContainer(Icons.notes),
+              const SizedBox(
+                width: 15.0,
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: editNoteController,
+                  decoration: const InputDecoration(
+                      hintText: 'Title',
+                      border: InputBorder.none,
+                      counterText: ""),
+                  style: const TextStyle(fontSize: 16.0),
+                  onChanged: (value) {
+                    note = value;
+                  },
+                  maxLength: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 30.0,
           ),
           Row(
             children: [
@@ -97,10 +108,17 @@ class _EditTransactionState extends State<EditTransaction> {
                 width: 15.0,
               ),
               Expanded(
-                child: TextField(
+                child: TextFormField(
                   controller: editAmountController,
                   onChanged: (value) {
-                    amount = int.parse(value);
+                    
+                    if (editAmountController.text.isNotEmpty) {
+                      
+                      amount = int.parse(value);
+                      // use the number
+                    }else{
+                      amount=0;
+                    }
                   },
                   decoration: const InputDecoration(
                       hintText: '0', border: InputBorder.none, counterText: ""),
@@ -131,9 +149,7 @@ class _EditTransactionState extends State<EditTransaction> {
                 selected: type == "income" ? true : false,
                 selectedColor: appThemeColor,
                 onSelected: (value) {
-                  setState(() {
-                    type = "income";
-                  });
+                  provider.selectTransactionType = "income";
                 },
               ),
               const SizedBox(
@@ -149,9 +165,7 @@ class _EditTransactionState extends State<EditTransaction> {
                 selected: type == "expense" ? true : false,
                 selectedColor: appThemeColor,
                 onSelected: (value) {
-                  setState(() {
-                    type = "expense";
-                  });
+                  provider.selectTransactionType = "expense";
                 },
               ),
             ],
@@ -182,28 +196,6 @@ class _EditTransactionState extends State<EditTransaction> {
           const SizedBox(
             height: 20.0,
           ),
-          Row(
-            children: [
-              sympolContainer(Icons.notes),
-              const SizedBox(
-                width: 15.0,
-              ),
-              Expanded(
-                child: TextField(
-                  controller: editNoteController,
-                  decoration: const InputDecoration(
-                      hintText: 'Title',
-                      border: InputBorder.none,
-                      counterText: ""),
-                  style: const TextStyle(fontSize: 16.0),
-                  onChanged: (value) {
-                    note = value;
-                  },
-                  maxLength: 12,
-                ),
-              ),
-            ],
-          ),
           const SizedBox(
             height: 20.0,
           ),
@@ -211,7 +203,7 @@ class _EditTransactionState extends State<EditTransaction> {
             height: 40.0,
             child: ElevatedButton(
                 onPressed: () {
-                  updateTransaction();
+                  updateTransaction(context);
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: appThemeColor,
@@ -224,23 +216,29 @@ class _EditTransactionState extends State<EditTransaction> {
     );
   }
 
-  updateTransaction() {
-    if (amount != null && note != '' && type.isNotEmpty) {
+  updateTransaction(BuildContext context) {
+    DateTime selectedDate =
+        Provider.of<EditTransactionProvider>(context, listen: false)
+            .selectedDate;
+    String type = Provider.of<EditTransactionProvider>(context, listen: false)
+        .transactionType;
+    if (amount != 0 && note != '' && type.isNotEmpty) { 
       Dbhelper dbhelper = Dbhelper();
       dbhelper.updateData(
           amount,
           selectedDate,
-          note,
+          note!,
           type,
           '${selectedDate.day} ${months[selectedDate.month - 1]}  ${selectedDate.year}',
-          widget.index);
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) =>  HomeScreen()));
+          index);
+
       AnimatedSnackBar.material('Updated Successfully',
               mobileSnackBarPosition: MobileSnackBarPosition.bottom,
               duration: const Duration(seconds: 3),
               type: AnimatedSnackBarType.success)
           .show(context);
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomeScreen()));
     } else {
       AnimatedSnackBar.material('Please fill all details',
               duration: const Duration(seconds: 3),

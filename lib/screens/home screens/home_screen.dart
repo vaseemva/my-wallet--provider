@@ -10,21 +10,21 @@ import 'package:my_wallet_app/screens/settings_screen/settings.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key,});
-
-  
+  HomeScreen({
+    super.key,
+  });
 
   final List<Widget> pages = [
-     Home(),
-    const AllTransactionScreen(),
-    //  AddTransaction(),
-    const Graphscreen(),
-    const Settings()
+    Home(),
+     AllTransactionScreen(),
+    AddTransaction(),
+     Graphscreen(),
+    Settings()
   ];
 
   @override
   Widget build(BuildContext context) {
-   int selectedIndex= Provider.of<HomeScreenProvider>(context).selectedIndex;
+    int selectedIndex = Provider.of<HomeScreenProvider>(context).selectedIndex;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,12 +33,12 @@ class HomeScreen extends StatelessWidget {
       ),
       body: pages[selectedIndex],
       bottomNavigationBar: Consumer<HomeScreenProvider>(
-        builder: (context, homeScData, child) => 
-        Padding(
+        builder: (context, homeScData, child) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
           child: GNav(
+              selectedIndex: selectedIndex,
               onTabChange: (index) {
-                homeScData.updateSelectedIndex(index);
+                homeScData.updateSelectedIndex(index); 
               },
               backgroundColor: appThemeColor,
               color: Colors.white,

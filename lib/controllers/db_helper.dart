@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/transaction_model.dart';
 
-class Dbhelper with ChangeNotifier{
+class Dbhelper with ChangeNotifier {
   late Box box;
   late SharedPreferences preferences;
 
@@ -26,6 +26,7 @@ class Dbhelper with ChangeNotifier{
       'dateTime': data
     };
     box.add(value);
+    notifyListeners();
   }
 
   addname(String name) async {
@@ -34,13 +35,13 @@ class Dbhelper with ChangeNotifier{
     notifyListeners();
   }
 
-  getname() async {
+ Future<String?> getname() async {
     preferences = await SharedPreferences.getInstance();
     return preferences.getString("name");
-    
   }
 
   Future<List<TransactionModel>> fetchSavedData() async {
+    
     if (box.values.isEmpty) {
       return Future.value([]);
     } else {
@@ -55,7 +56,6 @@ class Dbhelper with ChangeNotifier{
       });
       return items;
     }
-    
   }
 
   Future deleteData(int index) async {

@@ -8,27 +8,30 @@ import 'package:my_wallet_app/screens/home%20screens/widgets.dart';
 import 'package:my_wallet_app/widgets/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+// ignore: must_be_immutable
+class Home extends StatelessWidget {
+  Home({super.key});
 
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
   Dbhelper dbhelper = Dbhelper();
+
   DateTime today = DateTime.now();
+
   late SharedPreferences preferences;
+
   late Box box;
+
   int totalBalance = 0;
+
   int totalIncome = 0;
+
   int totalExpense = 0;
+
   getpreferences() async {
     preferences = await SharedPreferences.getInstance();
   }
 
-  String? name;
   List<FlSpot> dataSet = [];
+
   List<FlSpot> getPlotPoints(List<TransactionModel> entireData) {
     dataSet = [];
     List tempdataSet = [];
@@ -70,17 +73,10 @@ class _HomeState extends State<Home> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getpreferences();
-
-    box = Hive.box('transactions');
-    dbhelper.fetchSavedData();
-  }
-
+  // @override
   @override
   Widget build(BuildContext context) {
+    getpreferences();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -91,7 +87,7 @@ class _HomeState extends State<Home> {
           future: dbhelper.fetchSavedData(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return const Center(child: SizedBox());
+              return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasData) {
               if (snapshot.data!.isEmpty) {
@@ -103,7 +99,7 @@ class _HomeState extends State<Home> {
               return ListView(
                 padding: const EdgeInsets.all(12.0),
                 children: [
-                  nameCard(name: "${preferences.getString('name')}"),
+                  nameCard(name: '${preferences.getString('name')}'),
                   homeWalletCard(
                       context: context,
                       totalBalance: totalBalance,
@@ -138,7 +134,7 @@ class _HomeState extends State<Home> {
               );
             } else {
               return const Center(
-                child: SizedBox(),
+                child: CircularProgressIndicator(),
               );
             }
           }),

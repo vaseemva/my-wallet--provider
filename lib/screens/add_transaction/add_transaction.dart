@@ -9,6 +9,7 @@ import 'package:my_wallet_app/providers/home_screen_provider.dart';
 import 'package:my_wallet_app/screens/add_transaction/widgets.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class AddTransaction extends StatelessWidget {
   AddTransaction({super.key});
 
@@ -41,18 +42,17 @@ class AddTransaction extends StatelessWidget {
         firstDate: DateTime(2020, 12),
         lastDate: DateTime(2200, 12));
     if (picked != null && picked != selectedDate) {
+      // ignore: use_build_context_synchronously
       Provider.of<AddTransactionProvider>(context, listen: false).selectedDate =
-          selectedDate;
+          picked;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     DateTime selectedDate =
-        Provider.of<AddTransactionProvider>(context, listen: false)
-            .selectedDate;
-    String type = Provider.of<AddTransactionProvider>(context, listen: false)
-        .transactionType;
+        Provider.of<AddTransactionProvider>(context).selectedDate;
+    String type = Provider.of<AddTransactionProvider>(context).transactionType;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

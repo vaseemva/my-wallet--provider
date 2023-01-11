@@ -3,7 +3,7 @@ import 'package:my_wallet_app/models/transaction_model.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
-import '../../colors/colors.dart';
+import '../../../colors/colors.dart';
 
 Widget noGraph(BuildContext context) {
   return SizedBox(

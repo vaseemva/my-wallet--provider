@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:my_wallet_app/screens/graph_screen/widgets.dart';
+import 'package:my_wallet_app/providers/graph_screen_provider.dart';
+import 'package:my_wallet_app/screens/graph_screen/widgets/graph_monthly_filter.dart';
+import 'package:my_wallet_app/screens/graph_screen/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 import '../../colors/colors.dart';
 import '../../controllers/db_helper.dart';
 import '../../models/transaction_model.dart';
 
-class Graphscreen extends StatefulWidget {
-  const Graphscreen({Key? key}) : super(key: key);
+class Graphscreen extends StatelessWidget {
+  Graphscreen({Key? key}) : super(key: key);
 
-  @override
-  State<Graphscreen> createState() => _GraphscreenState();
-}
-
-String graphFilterValue = "All";
-String monthsFilterValue = "January";
-bool _isvisible = false;
-
-class _GraphscreenState extends State<Graphscreen> {
   Dbhelper dbhelper = Dbhelper();
 
   double totalIncome = 0;
+
   double totalExpense = 0;
+
   final graphFilter = <String>[
     'All',
     'Monthly',
   ];
+
   final monthsFilter = <String>[
     'January',
     'February',
@@ -39,6 +36,7 @@ class _GraphscreenState extends State<Graphscreen> {
     'November',
     'December'
   ];
+
   Map<String, double> dataMap = {};
 
   getTotalBalance(List<TransactionModel> entireData) {
@@ -64,19 +62,31 @@ class _GraphscreenState extends State<Graphscreen> {
   }
 
   List<TransactionModel> januaryList = [];
+
   List<TransactionModel> februaryList = [];
+
   List<TransactionModel> marchList = [];
+
   List<TransactionModel> aprilList = [];
+
   List<TransactionModel> mayList = [];
+
   List<TransactionModel> juneList = [];
+
   List<TransactionModel> julyList = [];
+
   List<TransactionModel> augustList = [];
+
   List<TransactionModel> septemberList = [];
+
   List<TransactionModel> octoberList = [];
+
   List<TransactionModel> novemberList = [];
+
   List<TransactionModel> decemberList = [];
 
   List<Color> chartColors = [];
+
   getMonthsList(List<TransactionModel> list) {
     for (TransactionModel item in list) {
       if (item.dateTime.month == 1) {
@@ -108,7 +118,9 @@ class _GraphscreenState extends State<Graphscreen> {
   }
 
   late Box box;
+
   Future<List<TransactionModel>> fetchFromDatabase() async {
+    box = Hive.box('transactions');
     if (box.values.isEmpty) {
       return Future.value([]);
     } else {
@@ -133,16 +145,14 @@ class _GraphscreenState extends State<Graphscreen> {
 
   List<TransactionModel> arrayOfData = [];
 
-  @override
-  void initState() {
-    super.initState();
-    box = Hive.box('transactions');
-    fetchFromDatabase();
-    getMonthsList(arrayOfData);
-  }
-
+  // @override
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<GraphProvider>(context);
+    String graphFilterValue = provider.graphFilterValue;
+    String monthsFilterValue = provider.monthsFilterValue;
+
+    box = Hive.box('transactions');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -176,10 +186,9 @@ class _GraphscreenState extends State<Graphscreen> {
                           }).toList(),
                           value: graphFilterValue,
                           onChanged: (String? newValue) {
-                            setState(() {
-                              graphFilterValue = newValue!;
-                              _isvisible = newValue == 'Monthly';
-                            });
+                            provider.graphFilterValue = newValue!;
+                            provider.isVisible =
+                                provider.graphFilterValue == 'Monthly';
                           }),
                     ),
                   ),
@@ -187,36 +196,10 @@ class _GraphscreenState extends State<Graphscreen> {
                 const SizedBox(
                   width: 20.0,
                 ),
-                Visibility(
-                  visible: _isvisible,
-                  child: dropDownContainer(
-                    context,
-                    child: Center(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                            iconEnabledColor: Colors.white,
-                            menuMaxHeight: 130.0,
-                            dropdownColor: appThemeColor,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
-                            borderRadius: BorderRadius.circular(10),
-                            items: monthsFilter
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            value: monthsFilterValue,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                monthsFilterValue = newValue!;
-                              });
-                            }),
-                      ),
-                    ),
-                  ),
-                )
+                MonthlyFilterContainer(
+                    provider: provider,
+                    monthsFilter: monthsFilter,
+                    monthsFilterValue: monthsFilterValue)
               ],
             ),
           ),
@@ -228,6 +211,7 @@ class _GraphscreenState extends State<Graphscreen> {
                 }
                 if (snapshot.hasData) {
                   getTotalBalance(snapshot.data!);
+                  getMonthsList(snapshot.data!);
                   if (snapshot.data!.isEmpty) {
                     return Center(child: noGraph(context));
                   }
@@ -287,3 +271,5 @@ class _GraphscreenState extends State<Graphscreen> {
     );
   }
 }
+
+

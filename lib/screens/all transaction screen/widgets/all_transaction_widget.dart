@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:my_wallet_app/models/transaction_model.dart';
-
-import '../all_transaction_screen.dart';
+import 'package:my_wallet_app/providers/all_transaction_provider.dart';
+import 'package:provider/provider.dart';
 import 'widgets.dart';
 
 class AllTransactionWidget extends StatelessWidget {
   final List<TransactionModel> data;
-  AllTransactionWidget({super.key, required this.data});
+ const AllTransactionWidget({super.key, required this.data});
 
-  final DateTime defaultDate = DateTime.now();
-  final startDate = dateRange.start;
-  final endDate = dateRange.end;
+ 
 
   @override
   Widget build(BuildContext context) {
+    final provider=Provider.of<AllTransactionProvider>(context);
+     final DateTime defaultDate = DateTime.now();
+  final startDate =provider.dateRange.start;
+  final endDate =provider.dateRange.end;
     return ListView.builder(
         shrinkWrap: true,
         reverse: true,
@@ -22,8 +24,8 @@ class AllTransactionWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           TransactionModel dataAtIndex = data[index];
           //filters for income
-          if (dropDownValue == 'Income' && dataAtIndex.type == 'income') {
-            if (dataFilterValue == 'Today') {
+          if (provider.dropDownValue == 'Income' && dataAtIndex.type == 'income') {
+            if (provider.dataFilterValue == 'Today') {
               if (dataAtIndex.dateTime.month == defaultDate.month &&
                   dataAtIndex.dateTime.day == defaultDate.day) {
                 return allTransactionIncomeTile(
@@ -35,7 +37,7 @@ class AllTransactionWidget extends StatelessWidget {
                     dataAtIndex.dateTime);
               }
               //Custom
-            } else if (dataFilterValue == 'Custom') {
+            } else if (provider.dataFilterValue == 'Custom') {
               if (dataAtIndex.dateTime.isAfter(startDate) &&
                   dataAtIndex.dateTime.isBefore(endDate)) {
                 return allTransactionIncomeTile(
@@ -47,7 +49,7 @@ class AllTransactionWidget extends StatelessWidget {
                     dataAtIndex.dateTime);
               }
               //all
-            } else if (dataFilterValue == 'All') {
+            } else if (provider.dataFilterValue == 'All') {
               return allTransactionIncomeTile(
                   dataAtIndex.amount,
                   dataAtIndex.note,
@@ -55,9 +57,9 @@ class AllTransactionWidget extends StatelessWidget {
                   index,
                   dataAtIndex.type,
                   dataAtIndex.dateTime);
-            } else if (dataFilterValue == 'Monthly') {
+            } else if (provider.dataFilterValue == 'Monthly') {
               //Monthly
-              if (yearFilterValue == 'JAN' && dataAtIndex.dateTime.month == 1) {
+              if (provider.yearFilterValue == 'JAN' && dataAtIndex.dateTime.month == 1) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
                     dataAtIndex.note,
@@ -65,7 +67,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'FEB' &&
+              } else if (provider.yearFilterValue == 'FEB' &&
                   dataAtIndex.dateTime.month == 2) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -74,7 +76,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'MAR' &&
+              } else if (provider.yearFilterValue == 'MAR' &&
                   dataAtIndex.dateTime.month == 3) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -83,7 +85,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'APR' &&
+              } else if (provider.yearFilterValue == 'APR' &&
                   dataAtIndex.dateTime.month == 4) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -92,7 +94,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'MAY' &&
+              } else if (provider.yearFilterValue == 'MAY' &&
                   dataAtIndex.dateTime.month == 5) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -101,7 +103,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'JUN' &&
+              } else if (provider.yearFilterValue == 'JUN' &&
                   dataAtIndex.dateTime.month == 6) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -110,7 +112,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'JUL' &&
+              } else if (provider.yearFilterValue == 'JUL' &&
                   dataAtIndex.dateTime.month == 7) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -119,7 +121,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'AUG' &&
+              } else if (provider.yearFilterValue == 'AUG' &&
                   dataAtIndex.dateTime.month == 8) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -128,7 +130,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'SEP' &&
+              } else if (provider.yearFilterValue == 'SEP' &&
                   dataAtIndex.dateTime.month == 9) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -137,7 +139,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'OCT' &&
+              } else if (provider.yearFilterValue == 'OCT' &&
                   dataAtIndex.dateTime.month == 10) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -146,7 +148,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'NOV' &&
+              } else if (provider.yearFilterValue == 'NOV' &&
                   dataAtIndex.dateTime.month == 11) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -155,7 +157,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'DEC' &&
+              } else if (provider.yearFilterValue == 'DEC' &&
                   dataAtIndex.dateTime.month == 12) {
                 return allTransactionIncomeTile(
                     dataAtIndex.amount,
@@ -166,11 +168,11 @@ class AllTransactionWidget extends StatelessWidget {
                     dataAtIndex.dateTime);
               }
             }
-          } else if (dropDownValue == 'Expense' &&
+          } else if (provider.dropDownValue == 'Expense' &&
               dataAtIndex.type == 'expense') {
             /////Expense Filtration
 
-            if (dataFilterValue == 'All') {
+            if (provider.dataFilterValue == 'All') {
               return allTransactionExpenseTile(
                   dataAtIndex.amount,
                   dataAtIndex.note,
@@ -178,7 +180,7 @@ class AllTransactionWidget extends StatelessWidget {
                   index,
                   dataAtIndex.type,
                   dataAtIndex.dateTime);
-            } else if (dataFilterValue == 'Today') {
+            } else if (provider.dataFilterValue == 'Today') {
               if (dataAtIndex.dateTime.month == defaultDate.month &&
                   dataAtIndex.dateTime.day == defaultDate.day) {
                 return allTransactionExpenseTile(
@@ -189,7 +191,7 @@ class AllTransactionWidget extends StatelessWidget {
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
               }
-            } else if (dataFilterValue == 'Custom') {
+            } else if (provider.dataFilterValue == 'Custom') {
               if (dataAtIndex.dateTime.isAfter(startDate) &&
                   dataAtIndex.dateTime.isBefore(endDate)) {
                 return allTransactionExpenseTile(
@@ -200,9 +202,9 @@ class AllTransactionWidget extends StatelessWidget {
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
               }
-            } else if (dataFilterValue == 'Monthly') {
+            } else if (provider.dataFilterValue == 'Monthly') {
               //Monthly
-              if (yearFilterValue == 'JAN' && dataAtIndex.dateTime.month == 1) {
+              if (provider.yearFilterValue == 'JAN' && dataAtIndex.dateTime.month == 1) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
                     dataAtIndex.note,
@@ -210,7 +212,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'FEB' &&
+              } else if (provider.yearFilterValue == 'FEB' &&
                   dataAtIndex.dateTime.month == 2) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -219,7 +221,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'MAR' &&
+              } else if (provider.yearFilterValue == 'MAR' &&
                   dataAtIndex.dateTime.month == 3) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -228,7 +230,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'APR' &&
+              } else if (provider.yearFilterValue == 'APR' &&
                   dataAtIndex.dateTime.month == 4) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -237,7 +239,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'MAY' &&
+              } else if (provider.yearFilterValue == 'MAY' &&
                   dataAtIndex.dateTime.month == 5) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -246,7 +248,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'JUN' &&
+              } else if (provider.yearFilterValue == 'JUN' &&
                   dataAtIndex.dateTime.month == 6) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -255,7 +257,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'JUL' &&
+              } else if (provider.yearFilterValue == 'JUL' &&
                   dataAtIndex.dateTime.month == 7) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -264,7 +266,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'AUG' &&
+              } else if (provider.yearFilterValue == 'AUG' &&
                   dataAtIndex.dateTime.month == 8) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -273,7 +275,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'SEP' &&
+              } else if (provider.yearFilterValue == 'SEP' &&
                   dataAtIndex.dateTime.month == 9) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -282,7 +284,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'OCT' &&
+              } else if (provider.yearFilterValue == 'OCT' &&
                   dataAtIndex.dateTime.month == 10) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -291,7 +293,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'NOV' &&
+              } else if (provider.yearFilterValue == 'NOV' &&
                   dataAtIndex.dateTime.month == 11) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -300,7 +302,7 @@ class AllTransactionWidget extends StatelessWidget {
                     index,
                     dataAtIndex.type,
                     dataAtIndex.dateTime);
-              } else if (yearFilterValue == 'DEC' &&
+              } else if (provider.yearFilterValue == 'DEC' &&
                   dataAtIndex.dateTime.month == 12) {
                 return allTransactionExpenseTile(
                     dataAtIndex.amount,
@@ -312,9 +314,9 @@ class AllTransactionWidget extends StatelessWidget {
               }
             }
           } else {
-            if (dropDownValue == 'All') {
+            if (provider.dropDownValue == 'All') {
               if (dataAtIndex.type == 'income') {
-                if (dataFilterValue == 'All') {
+                if (provider.dataFilterValue == 'All') {
                   return allTransactionIncomeTile(
                       dataAtIndex.amount,
                       dataAtIndex.note,
@@ -322,7 +324,7 @@ class AllTransactionWidget extends StatelessWidget {
                       index,
                       dataAtIndex.type,
                       dataAtIndex.dateTime);
-                } else if (dataFilterValue == 'Today') {
+                } else if (provider.dataFilterValue == 'Today') {
                   if (dataAtIndex.dateTime.month == defaultDate.month &&
                       dataAtIndex.dateTime.day == defaultDate.day) {
                     return allTransactionIncomeTile(
@@ -333,7 +335,7 @@ class AllTransactionWidget extends StatelessWidget {
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
                   }
-                } else if (dataFilterValue == 'Custom') {
+                } else if (provider.dataFilterValue == 'Custom') {
                   if (dataAtIndex.dateTime.isAfter(startDate) &&
                       dataAtIndex.dateTime.isBefore(endDate)) {
                     return allTransactionIncomeTile(
@@ -344,8 +346,8 @@ class AllTransactionWidget extends StatelessWidget {
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
                   }
-                } else if (dataFilterValue == 'Monthly') {
-                  if (yearFilterValue == 'JAN' &&
+                } else if (provider.dataFilterValue == 'Monthly') {
+                  if (provider.yearFilterValue == 'JAN' &&
                       dataAtIndex.dateTime.month == 1) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -354,7 +356,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'FEB' &&
+                  } else if (provider.yearFilterValue == 'FEB' &&
                       dataAtIndex.dateTime.month == 2) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -363,7 +365,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'MAR' &&
+                  } else if (provider.yearFilterValue == 'MAR' &&
                       dataAtIndex.dateTime.month == 3) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -372,7 +374,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'APR' &&
+                  } else if (provider.yearFilterValue == 'APR' &&
                       dataAtIndex.dateTime.month == 4) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -381,7 +383,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'MAY' &&
+                  } else if (provider.yearFilterValue == 'MAY' &&
                       dataAtIndex.dateTime.month == 5) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -390,7 +392,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'JUN' &&
+                  } else if (provider.yearFilterValue == 'JUN' &&
                       dataAtIndex.dateTime.month == 6) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -399,7 +401,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'JUL' &&
+                  } else if (provider.yearFilterValue == 'JUL' &&
                       dataAtIndex.dateTime.month == 7) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -408,7 +410,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'AUG' &&
+                  } else if (provider.yearFilterValue == 'AUG' &&
                       dataAtIndex.dateTime.month == 8) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -417,7 +419,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'SEP' &&
+                  } else if (provider.yearFilterValue == 'SEP' &&
                       dataAtIndex.dateTime.month == 9) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -426,7 +428,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'OCT' &&
+                  } else if (provider.yearFilterValue == 'OCT' &&
                       dataAtIndex.dateTime.month == 10) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -435,7 +437,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'NOV' &&
+                  } else if (provider.yearFilterValue == 'NOV' &&
                       dataAtIndex.dateTime.month == 11) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -444,7 +446,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'DEC' &&
+                  } else if (provider.yearFilterValue == 'DEC' &&
                       dataAtIndex.dateTime.month == 12) {
                     return allTransactionIncomeTile(
                         dataAtIndex.amount,
@@ -456,7 +458,7 @@ class AllTransactionWidget extends StatelessWidget {
                   }
                 }
               } else {
-                if (dataFilterValue == 'All') {
+                if (provider.dataFilterValue == 'All') {
                   return allTransactionExpenseTile(
                       dataAtIndex.amount,
                       dataAtIndex.note,
@@ -464,7 +466,7 @@ class AllTransactionWidget extends StatelessWidget {
                       index,
                       dataAtIndex.type,
                       dataAtIndex.dateTime);
-                } else if (dataFilterValue == 'Today') {
+                } else if (provider.dataFilterValue == 'Today') {
                   if (dataAtIndex.dateTime.month == defaultDate.month &&
                       dataAtIndex.dateTime.day == defaultDate.day) {
                     return allTransactionExpenseTile(
@@ -475,7 +477,7 @@ class AllTransactionWidget extends StatelessWidget {
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
                   }
-                } else if (dataFilterValue == 'Custom') {
+                } else if (provider.dataFilterValue == 'Custom') {
                   if (dataAtIndex.dateTime.isAfter(startDate) &&
                       dataAtIndex.dateTime.isBefore(endDate)) {
                     return allTransactionExpenseTile(
@@ -486,8 +488,8 @@ class AllTransactionWidget extends StatelessWidget {
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
                   }
-                } else if (dataFilterValue == 'Monthly') {
-                  if (yearFilterValue == 'JAN' &&
+                } else if (provider.dataFilterValue == 'Monthly') {
+                  if (provider.yearFilterValue == 'JAN' &&
                       dataAtIndex.dateTime.month == 1) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -496,7 +498,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'FEB' &&
+                  } else if (provider.yearFilterValue == 'FEB' &&
                       dataAtIndex.dateTime.month == 2) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -505,7 +507,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'MAR' &&
+                  } else if (provider.yearFilterValue == 'MAR' &&
                       dataAtIndex.dateTime.month == 3) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -514,7 +516,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'APR' &&
+                  } else if (provider.yearFilterValue == 'APR' &&
                       dataAtIndex.dateTime.month == 4) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -523,7 +525,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'MAY' &&
+                  } else if (provider.yearFilterValue == 'MAY' &&
                       dataAtIndex.dateTime.month == 5) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -532,7 +534,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'JUN' &&
+                  } else if (provider.yearFilterValue == 'JUN' &&
                       dataAtIndex.dateTime.month == 6) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -541,7 +543,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'JUL' &&
+                  } else if (provider.yearFilterValue == 'JUL' &&
                       dataAtIndex.dateTime.month == 7) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -550,7 +552,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'AUG' &&
+                  } else if (provider.yearFilterValue == 'AUG' &&
                       dataAtIndex.dateTime.month == 8) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -559,7 +561,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'SEP' &&
+                  } else if (provider.yearFilterValue == 'SEP' &&
                       dataAtIndex.dateTime.month == 9) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -568,7 +570,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'OCT' &&
+                  } else if (provider.yearFilterValue == 'OCT' &&
                       dataAtIndex.dateTime.month == 10) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -577,7 +579,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'NOV' &&
+                  } else if (provider.yearFilterValue == 'NOV' &&
                       dataAtIndex.dateTime.month == 11) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,
@@ -586,7 +588,7 @@ class AllTransactionWidget extends StatelessWidget {
                         index,
                         dataAtIndex.type,
                         dataAtIndex.dateTime);
-                  } else if (yearFilterValue == 'DEC' &&
+                  } else if (provider.yearFilterValue == 'DEC' &&
                       dataAtIndex.dateTime.month == 12) {
                     return allTransactionExpenseTile(
                         dataAtIndex.amount,

@@ -2,49 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:my_wallet_app/colors/colors.dart';
 import 'package:my_wallet_app/controllers/db_helper.dart';
 import 'package:my_wallet_app/models/transaction_model.dart';
+import 'package:my_wallet_app/providers/all_transaction_provider.dart';
 import 'package:my_wallet_app/screens/all%20transaction%20screen/widgets/all_transaction_widget.dart';
+import 'package:my_wallet_app/screens/all%20transaction%20screen/widgets/date_filter_container.dart';
+import 'package:my_wallet_app/screens/all%20transaction%20screen/widgets/in_or_ex_container.dart';
+import 'package:my_wallet_app/screens/all%20transaction%20screen/widgets/monthly_dropdown.dart';
 import 'package:my_wallet_app/screens/all%20transaction%20screen/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
-class AllTransactionScreen extends StatefulWidget {
-  const AllTransactionScreen({super.key});
 
-  @override
-  State<AllTransactionScreen> createState() => _AllTransactionScreenState();
-}
+// ignore: must_be_immutable
+class AllTransactionScreen extends StatelessWidget {
+  AllTransactionScreen({super.key});
+  DateTimeRange initdateRange =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
-bool monthlydropdownvisiblity = false;
-bool customdatevisiblity = false;
-String dataFilterValue = 'All';
-String yearFilterValue = 'JAN';
-String dropDownValue = 'All';
-DateTimeRange dateRange =
-    DateTimeRange(start: DateTime.now(), end: DateTime.now());
-
-class _AllTransactionScreenState extends State<AllTransactionScreen> {
-  Future pickDateRange() async {
+  Future pickDateRange(BuildContext context) async {
     DateTimeRange? newDateRange = await showDateRangePicker(
         context: context,
-        initialDateRange: dateRange,
+        initialDateRange: initdateRange,
         firstDate: DateTime(2000),
         lastDate: DateTime(2040));
-    if (newDateRange == null) return;
-    setState(() {
-      dateRange = newDateRange;
-    });
+    if (newDateRange == null) return; 
+
+    // ignore: use_build_context_synchronously
+    Provider.of<AllTransactionProvider>(context, listen: false).dateRange =
+        newDateRange;
   }
 
-  DateTime defaultDate = DateTime.now();
   final types = <String>[
     'All',
     'Income',
     'Expense',
   ];
+
   final itemDataFilter = <String>[
     'All',
     'Today',
     'Monthly',
     'Custom',
   ];
+
   final itemsYearFilter = <String>[
     'JAN',
     'FEB',
@@ -59,9 +57,18 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
     'NOV',
     'DEC'
   ];
+
   Dbhelper dbhelper = Dbhelper();
+
   @override
   Widget build(BuildContext context) {
+    final alltprovider = Provider.of<AllTransactionProvider>(context);
+    bool monthlydropdownvisiblity = alltprovider.monthlydropdownvisiblity;
+    bool customdatevisiblity = alltprovider.customdatevisiblity;
+    String dataFilterValue = alltprovider.dataFilterValue;
+    String yearFilterValue = alltprovider.yearFilterValue;
+    String dropDownValue = alltprovider.dropDownValue;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -82,135 +89,31 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: dataFilterValue == 'Monthly' ||
-                              dataFilterValue == 'Custom'
-                          ? MediaQuery.of(context).size.width * 0.26
-                          : MediaQuery.of(context).size.width * 0.30,
-                      height: MediaQuery.of(context).size.height * 0.06,
-                      decoration: BoxDecoration(
-                          color: appThemeColor,
-                          borderRadius: BorderRadius.circular(20.0)),
-                      child: Center(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                              alignment: AlignmentDirectional.center,
-                              iconEnabledColor: Colors.white,
-                              dropdownColor: appThemeColor,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
-                              items: types.map<DropdownMenuItem<String>>(
-                                  (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              value: dropDownValue,
-                              onChanged: (String? newvalue) {
-                                setState(() {
-                                  dropDownValue = newvalue!;
-                                });
-                              }),
-                        ),
-                      ),
-                    ),
+                    InOrExFilterContainer(
+                        dataFilterValue: dataFilterValue,
+                        types: types,
+                        dropDownValue: dropDownValue,
+                        alltprovider: alltprovider),
                     dataFilterValue == 'Monthly' || dataFilterValue == 'Custom'
                         ? const SizedBox(width: 7)
                         : SizedBox(
                             width: MediaQuery.of(context).size.width * 0.15),
-                    Container(
-                      width: dataFilterValue == 'Monthly' ||
-                              dataFilterValue == 'Custom'
-                          ? MediaQuery.of(context).size.width * 0.26
-                          : MediaQuery.of(context).size.width * 0.30,
-                      height: MediaQuery.of(context).size.height * 0.06,
-                      decoration: BoxDecoration(
-                        color: appThemeColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                              alignment: AlignmentDirectional.center,
-                              iconEnabledColor: Colors.white,
-                              dropdownColor: appThemeColor,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
-                              borderRadius: BorderRadius.circular(20),
-                              items: itemDataFilter
-                                  .map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              value: dataFilterValue,
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  dataFilterValue = newValue!;
-                                  monthlydropdownvisiblity =
-                                      dataFilterValue == 'Monthly';
-                                  customdatevisiblity =
-                                      dataFilterValue == 'Custom';
-                                });
-                              }),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: monthlydropdownvisiblity,
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 8),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.20,
-                            height: MediaQuery.of(context).size.height * 0.06,
-                            decoration: BoxDecoration(
-                                color: dataFilterValue == 'Monthly'
-                                    ? appThemeColor
-                                    : const Color.fromARGB(255, 201, 245, 235),
-                                borderRadius: BorderRadius.circular(20.0)),
-                            child: Center(
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                    alignment: AlignmentDirectional.center,
-                                    disabledHint: const Text('Month'),
-                                    menuMaxHeight: 200,
-                                    iconEnabledColor: Colors.white,
-                                    dropdownColor: appThemeColor,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 14),
-                                    borderRadius: BorderRadius.circular(10),
-                                    items: dataFilterValue == 'Monthly'
-                                        ? itemsYearFilter
-                                            .map<DropdownMenuItem<String>>(
-                                                (String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList()
-                                        : null,
-                                    value: yearFilterValue,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        yearFilterValue = newValue!;
-                                      });
-                                    }),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    DateFilterContainer(
+                        dataFilterValue: dataFilterValue,
+                        itemDataFilter: itemDataFilter,
+                        alltprovider: alltprovider),
+                    MonthlyDropdown(
+                        monthlydropdownvisiblity: monthlydropdownvisiblity,
+                        dataFilterValue: dataFilterValue,
+                        itemsYearFilter: itemsYearFilter,
+                        yearFilterValue: yearFilterValue,
+                        alltprovider: alltprovider),
                     Visibility(
                       visible: customdatevisiblity,
                       child: IconButton(
                           padding: const EdgeInsets.only(bottom: 0),
                           onPressed: () {
-                            pickDateRange();
+                            pickDateRange(context);
                           },
                           color: appThemeColor,
                           icon: Icon(
@@ -244,3 +147,4 @@ class _AllTransactionScreenState extends State<AllTransactionScreen> {
     );
   }
 }
+

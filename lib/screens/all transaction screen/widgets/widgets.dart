@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_wallet_app/controllers/db_helper.dart';
+import 'package:my_wallet_app/providers/edit_screen_provider.dart';
 import 'package:my_wallet_app/screens/edit_transaction_screen/edit_transaction_screen.dart';
+import 'package:provider/provider.dart';
 import '../../../colors/colors.dart';
 import '../../home screens/home_screen.dart';
 
@@ -32,15 +34,16 @@ Widget allTransactionExpenseTile(int amount, String note, String date,
       ),
       SlidableAction(
         onPressed: (BuildContext context) {
+          Provider.of<EditTransactionProvider>(context, listen: false)
+              .selectTransactionType = type;
+          Provider.of<EditTransactionProvider>(context, listen: false)
+              .selectedDate = dateTime;
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => EditTransaction(
-                  amount: amount,
-                  note: note,
-                  date: dateTime,
-                  type: type,
-                  index: index)));
+            builder: (context) =>
+                EditTransaction(fieldamount: amount, note: note, index: index),
+          ));
         },
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(20.0), 
         backgroundColor: Colors.green,
         label: 'Edit',
         icon: Icons.edit,
@@ -48,9 +51,9 @@ Widget allTransactionExpenseTile(int amount, String note, String date,
     ]),
     child: GestureDetector(
       onTap: () {
-         Fluttertoast.showToast(
-                          msg: 'Swipe to edit or delete',
-                          backgroundColor:const Color.fromARGB(255, 74, 101, 115));
+        Fluttertoast.showToast(
+            msg: 'Swipe to edit or delete',
+            backgroundColor: const Color.fromARGB(255, 74, 101, 115));
       },
       child: Container(
         margin: const EdgeInsets.all(7.0),
@@ -122,13 +125,16 @@ Widget allTransactionIncomeTile(int amount, String note, String date, int index,
       ),
       SlidableAction(
         onPressed: (BuildContext context) {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => EditTransaction(
-                  amount: amount,
-                  note: note,
-                  date: dateTime,
-                  type: type,
-                  index: index)));
+          Provider.of<EditTransactionProvider>(context, listen: false)
+              .selectTransactionType = type;
+          Provider.of<EditTransactionProvider>(context, listen: false)
+              .selectedDate = dateTime;
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) =>
+                  EditTransaction(fieldamount: amount, note: note, index: index),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(20.0),
         backgroundColor: Colors.green,
@@ -138,9 +144,9 @@ Widget allTransactionIncomeTile(int amount, String note, String date, int index,
     ]),
     child: GestureDetector(
       onTap: () {
-         Fluttertoast.showToast(
-                          msg: 'Swipe to edit or delete',
-                          backgroundColor:const Color.fromARGB(255, 74, 101, 115));
+        Fluttertoast.showToast(
+            msg: 'Swipe to edit or delete',
+            backgroundColor: const Color.fromARGB(255, 74, 101, 115));
       },
       child: Container(
         margin: const EdgeInsets.all(7.0),
@@ -219,7 +225,7 @@ void delete(ctx, index) {
                     .bottom, // Position of snackbar on mobile devices
               ).show(context);
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) =>  HomeScreen()));
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
             },
             child: const Text(
               'Yes',

@@ -1,21 +1,21 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:my_wallet_app/colors/colors.dart';
+import 'package:my_wallet_app/providers/home_screen_provider.dart';
 import 'package:my_wallet_app/screens/settings_screen/widgets.dart';
 import 'package:my_wallet_app/screens/splash_screen/splash_screen.dart';
 import 'package:my_wallet_app/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 import '../../controllers/db_helper.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class Settings extends StatelessWidget {
+  Settings({Key? key}) : super(key: key);
 
-  @override
-  State<Settings> createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
   final Dbhelper dbhelper = Dbhelper();
+
   String newName = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,14 +33,14 @@ class _SettingsState extends State<Settings> {
               title: "Change Name",
               icon: Icons.person,
             ),
-            onTap: () => changeNameDialogue(),
+            onTap: () => changeNameDialogue(context),
           ),
           GestureDetector(
             child: settingsTile(
               title: 'Reset App',
               icon: Icons.clear_all,
             ),
-            onTap: () => resetDialogue(),
+            onTap: () => resetDialogue(context),
           ),
           InkWell(
             child: settingsTile(
@@ -93,7 +93,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Future changeNameDialogue() => showDialog(
+  Future changeNameDialogue(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
             title: const Text('Enter New Name'),
@@ -131,7 +131,7 @@ class _SettingsState extends State<Settings> {
             ],
           ));
 
-  Future resetDialogue() => showDialog(
+  Future resetDialogue(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
             title: const Text('Are you sure..?'),
@@ -148,6 +148,8 @@ class _SettingsState extends State<Settings> {
                       onPressed: () {
                         dbhelper.resetData();
                         dbhelper.resetSharedPreference();
+                        Provider.of<HomeScreenProvider>(context, listen: false)
+                            .updateSelectedIndex(0);
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (context) => const SplashScreen()));
                       },
